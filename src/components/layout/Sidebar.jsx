@@ -49,7 +49,7 @@ export const Sidebar = () => {
             {!collapsed && (
               <div className="truncate">
                 <h1 className="font-bold text-base text-[var(--color-text-primary)] leading-tight tracking-tight uppercase">
-                  {t("EcoGuard NER")}
+                  {t("EvoGuard NER")}
                 </h1>
                 <p className="text-[10px] text-[var(--color-text-muted)] font-medium tracking-wide uppercase truncate">
                   {t("Operational Intelligence")}

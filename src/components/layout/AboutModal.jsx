@@ -12,7 +12,7 @@ export const AboutModal = ({ isOpen, onClose }) => {
                   <div className="p-2 bg-blue-100 rounded text-blue-700">
                      <Info className="w-5 h-5" />
                   </div>
-                  <h2 className="text-lg font-bold text-[var(--color-text-primary)]">About EcoWatch</h2>
+                  <h2 className="text-lg font-bold text-[var(--color-text-primary)]">About EvoGuard</h2>
                </div>
                <button onClick={onClose} className="p-2 hover:bg-slate-200 rounded text-[var(--color-text-secondary)] transition-colors">
                   <X className="w-5 h-5" />
@@ -23,7 +23,7 @@ export const AboutModal = ({ isOpen, onClose }) => {
                <div className="space-y-2">
                   <h3 className="text-[var(--color-text-primary)] font-bold text-base border-b border-slate-100 pb-2">Project Context: NER-DRR Portal Extension</h3>
                   <p className="text-[var(--color-text-secondary)]">
-                     EcoWatch is a system designed for disaster management in the North Eastern Region (NER).
+                     EvoGuard is a system designed for disaster management in the North Eastern Region (NER).
                      It is designed to be a modern, predictive extension to NESAC's existing NER-DRR (North Eastern Space Applications Centre - Disaster Risk Reduction) geoportal.
                   </p>
                </div>

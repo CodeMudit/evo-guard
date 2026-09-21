@@ -63,7 +63,8 @@ export const MapPanel = ({ onSelectHazard, onCreateReport, onOpen3D }) => {
   
   const [inspectorLocation, setInspectorLocation] = useState(null);
   const [selectedRoad, setSelectedRoad] = useState(null);
-  const [activeAlternateRoute, setActiveAlternateRoute] = useState(null);
+  // { alternate: [[lat,lng],...], primary: [[lat,lng],...], status }
+  const [activeRouteOverlay, setActiveRouteOverlay] = useState(null);
 
   const [activeLayers, setActiveLayers] = useState({
     satellite: false,
@@ -108,8 +109,9 @@ export const MapPanel = ({ onSelectHazard, onCreateReport, onOpen3D }) => {
   const roadStyle = (feature) => {
     return {
       color: feature.properties.status === "Open" ? "#10b981" : feature.properties.status === "Partially Blocked" ? "#f59e0b" : "#ef4444",
-      weight: 3,
-      opacity: 0.9
+      weight: 6,
+      opacity: 0.95,
+      lineCap: "round",
     };
   };
 
@@ -123,7 +125,7 @@ export const MapPanel = ({ onSelectHazard, onCreateReport, onOpen3D }) => {
   const handleMapClick = (lat, lng) => {
     setInspectorLocation({ lat, lng });
     setSelectedRoad(null);
-    setActiveAlternateRoute(null);
+    setActiveRouteOverlay(null);
   };
 
   return (
@@ -186,8 +188,9 @@ export const MapPanel = ({ onSelectHazard, onCreateReport, onOpen3D }) => {
         )}
         {activeLayers.dark && (
           <TileLayer
-            url={`https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png`}
-            attribution="&copy; <a href='https://carto.com/'>CARTO</a>"
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            maxZoom={19}
           />
         )}
 
@@ -215,7 +218,7 @@ export const MapPanel = ({ onSelectHazard, onCreateReport, onOpen3D }) => {
                   L.DomEvent.stopPropagation(e); // Stop map click
                   setSelectedRoad(feature);
                   setInspectorLocation(null);
-                  setActiveAlternateRoute(null);
+                  setActiveRouteOverlay(null);
                 }
               });
             }}
@@ -317,11 +320,18 @@ export const MapPanel = ({ onSelectHazard, onCreateReport, onOpen3D }) => {
               ))}
             </LayerGroup>
         )}
-        {/* Alternate Route Polyline */}
-        {activeAlternateRoute && activeAlternateRoute.length > 0 && (
-          <Polyline 
-            positions={activeAlternateRoute}
-            pathOptions={{ color: '#3b82f6', weight: 4, opacity: 0.9, dashArray: '8, 8' }}
+        {/* Primary (blocked) route — solid red dashed */}
+        {activeRouteOverlay?.primary?.length > 0 && (
+          <Polyline
+            positions={activeRouteOverlay.primary}
+            pathOptions={{ color: '#ef4444', weight: 5, opacity: 0.85, dashArray: '12, 8' }}
+          />
+        )}
+        {/* Risk-adjusted alternate route — solid blue */}
+        {activeRouteOverlay?.alternate?.length > 0 && (
+          <Polyline
+            positions={activeRouteOverlay.alternate}
+            pathOptions={{ color: '#3b82f6', weight: 5, opacity: 0.95 }}
           />
         )}
 
@@ -367,9 +377,9 @@ export const MapPanel = ({ onSelectHazard, onCreateReport, onOpen3D }) => {
           roadFeature={selectedRoad}
           onClose={() => {
             setSelectedRoad(null);
-            setActiveAlternateRoute(null);
+            setActiveRouteOverlay(null);
           }}
-          onRouteCalculated={(geom) => setActiveAlternateRoute(geom)}
+          onRouteCalculated={(payload) => setActiveRouteOverlay(payload)}
         />
       )}
     </div>

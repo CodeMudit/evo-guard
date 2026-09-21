@@ -88,7 +88,7 @@ export const ReportsPage = () => {
       MLRiskScore: a.mlRiskScore,
       Message: a.message,
     }));
-    exportToCsv("ecowatch-environmental-report.csv", reportData);
+    exportToCsv("evoguard-environmental-report.csv", reportData);
     addToast("Report Generated", "Exported environmental incident summary CSV file.", "success");
   };
 

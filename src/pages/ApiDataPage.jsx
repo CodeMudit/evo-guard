@@ -12,7 +12,7 @@ export const ApiDataPage = () => {
 
   const handleExportCsv = () => {
     const { apiHistory } = generateHistoryData(timeframe);
-    exportToCsv(`ecowatch-api-history-${timeframe}.csv`, apiHistory);
+    exportToCsv(`evoguard-api-history-${timeframe}.csv`, apiHistory);
     addToast("Export Started", `Downloaded API history data (${timeframe}) as CSV.`, "success");
   };
 

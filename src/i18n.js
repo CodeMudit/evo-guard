@@ -4,7 +4,7 @@ import { initReactI18next } from 'react-i18next';
 const resources = {
   en: {
     translation: {
-      "EcoWatch NER": "EcoWatch NER",
+      "EvoGuard NER": "EvoGuard NER",
       "Disaster Risk Decision Support": "Disaster Risk Decision Support",
       "Command Center": "Command Center",
       "Field Sensors": "Field Sensors",
@@ -24,7 +24,7 @@ const resources = {
   },
   hi: {
     translation: {
-      "EcoWatch NER": "इकोवॉच NER",
+      "EvoGuard NER": "एवोगार्ड NER",
       "Disaster Risk Decision Support": "आपदा जोखिम निर्णय समर्थन",
       "Command Center": "नियंत्रण केंद्र",
       "Field Sensors": "फील्ड सेंसर",
@@ -44,7 +44,7 @@ const resources = {
   },
   as: {
     translation: {
-      "EcoWatch NER": "ইক'ৱাচ NER",
+      "EvoGuard NER": "এভোগার্ড NER",
       "Disaster Risk Decision Support": "বিপৰ্যয় শংকা সিদ্ধান্ত সমৰ্থন",
       "Command Center": "কমাণ্ড চেণ্টাৰ",
       "Field Sensors": "ফিল্ড ছেন্সৰ",
@@ -64,7 +64,7 @@ const resources = {
   },
   brx: {
     translation: {
-      "EcoWatch NER": "EcoWatch NER (Bodo)",
+      "EvoGuard NER": "EvoGuard NER (Bodo)",
       "Disaster Risk Decision Support": "Disaster Risk Decision Support (Bodo)",
       "Command Center": "Command Center (Bodo)",
       "Field Sensors": "Field Sensors (Bodo)",
@@ -76,7 +76,7 @@ const resources = {
   },
   kha: {
     translation: {
-      "EcoWatch NER": "EcoWatch NER (Khasi)",
+      "EvoGuard NER": "EvoGuard NER (Khasi)",
       "Disaster Risk Decision Support": "Disaster Risk Decision Support (Khasi)",
       "Command Center": "Command Center (Khasi)",
       "Field Sensors": "Field Sensors (Khasi)",
@@ -88,7 +88,7 @@ const resources = {
   },
   miz: {
     translation: {
-      "EcoWatch NER": "EcoWatch NER (Mizo)",
+      "EvoGuard NER": "EvoGuard NER (Mizo)",
       "Disaster Risk Decision Support": "Disaster Risk Decision Support (Mizo)",
       "Command Center": "Command Center (Mizo)",
       "Field Sensors": "Field Sensors (Mizo)",
@@ -100,7 +100,7 @@ const resources = {
   },
   mni: {
     translation: {
-      "EcoWatch NER": "EcoWatch NER (Manipuri)",
+      "EvoGuard NER": "EvoGuard NER (Manipuri)",
       "Disaster Risk Decision Support": "Disaster Risk Decision Support (Manipuri)",
       "Command Center": "Command Center (Manipuri)",
       "Field Sensors": "Field Sensors (Manipuri)",
@@ -112,7 +112,7 @@ const resources = {
   },
   nag: {
     translation: {
-      "EcoWatch NER": "EcoWatch NER (Nagamese)",
+      "EvoGuard NER": "EvoGuard NER (Nagamese)",
       "Disaster Risk Decision Support": "Disaster Risk Decision Support (Nagamese)",
       "Command Center": "Command Center (Nagamese)",
       "Field Sensors": "Field Sensors (Nagamese)",

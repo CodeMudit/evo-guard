@@ -3,7 +3,7 @@ export const API_CONFIG = {
   BASE_URL: import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api/v1",
   
   // Modes: "connected" (real API), "demo" (simulated data), "offline" (local persistence)
-  MODE: import.meta.env.VITE_ECOGUARD_MODE || "demo",
+  MODE: import.meta.env.VITE_EVOGUARD_MODE || "demo",
   
   // Feature flags
   FEATURES: {

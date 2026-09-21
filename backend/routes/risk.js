@@ -71,7 +71,7 @@ router.post('/predict', (req, res) => {
                 score: finalScore,
                 level: category,
                 factors: factors,
-                model: "EcoWatch Risk Fusion Engine (Deterministic)",
+                model: "EvoGuard Risk Fusion Engine (Deterministic)",
                 modelStatus: "DERIVED PROTOTYPE",
                 timestamp: new Date().toISOString()
             }

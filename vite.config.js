@@ -45,8 +45,8 @@ export default defineConfig({
         ]
       },
       manifest: {
-        name: 'EcoWatch - NER-DRR Platform',
-        short_name: 'EcoWatch',
+        name: 'EvoGuard - NER Landslide Hazard Monitoring',
+        short_name: 'EvoGuard',
         description: 'AI-driven situational awareness and disaster management portal',
         theme_color: '#0f172a',
         icons: [

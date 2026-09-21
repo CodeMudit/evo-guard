@@ -12,7 +12,7 @@ if (!fs.existsSync(dbDir)) {
   fs.mkdirSync(dbDir);
 }
 
-const dbPath = path.join(dbDir, 'ecowatch.sqlite');
+const dbPath = path.join(dbDir, 'evoguard.sqlite');
 const db = new Database(dbPath);
 
 // Initialize schemas

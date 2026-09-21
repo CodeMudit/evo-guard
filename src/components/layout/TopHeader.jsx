@@ -99,7 +99,7 @@ export const TopHeader = ({ onMobileMenuToggle }) => {
           
           <div className="hidden lg:block">
             <h2 className="text-sm font-bold text-[var(--color-text-primary)]">
-              {t("EcoWatch NER")}
+              {t("EvoGuard NER")}
             </h2>
             <p className="text-[11px] text-[var(--color-text-muted)] font-medium uppercase tracking-wider">
               {t("Command Center")}

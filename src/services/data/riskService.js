@@ -4,8 +4,8 @@ import { demoProvider } from './demoProvider';
 
 /**
  * Risk Service
- * Acts as the abstraction layer between the UI and the backend APIs.
- * Automatically delegates to DemoProvider if API_CONFIG.MODE === "demo"
+ * Abstraction between UI and backend APIs.
+ * predictRisk now consumes live terrain / NDVI / susceptibility from satellite adapter.
  */
 class RiskService {
   isDemo() {
@@ -62,29 +62,87 @@ class RiskService {
     return apiClient.get('/sources');
   }
 
+  /**
+   * Derive categorical risk from point intelligence (weather + terrain + NDVI).
+   * Inputs from satelliteDataService feed susceptibility / slope / ndvi.
+   */
   async predictRisk(pointData) {
-    // POST /api/v1/risk/predict
-    // For demo/prototype, simulate the derived prototype risk calculation
-    await new Promise(res => setTimeout(res, 50)); // tiny mock delay
+    await new Promise((res) => setTimeout(res, 30));
 
-    if (!pointData || !pointData.rainfall || !pointData.soil) {
-       return { level: 'UNKNOWN', confidence: 'LOW', status: 'DERIVED PROTOTYPE' };
+    if (!pointData) {
+      return { level: 'UNKNOWN', confidence: 'LOW', status: 'DERIVED PROTOTYPE', score: 0 };
     }
 
     const rain = parseFloat(pointData.rainfall?.rain24h?.value || 0);
     const soil = parseFloat(pointData.soil?.moisture?.value || 0);
-    const elev = pointData.terrain?.elevation?.value || 0;
+    const elev = parseFloat(pointData.terrain?.elevation?.value || 0);
+    const slope = parseFloat(pointData.terrain?.slope?.value || 0);
+    const ndvi = pointData.ndvi?.value != null ? parseFloat(pointData.ndvi.value) : null;
+    const satScore = pointData.susceptibility?.score != null
+      ? parseFloat(pointData.susceptibility.score)
+      : null;
 
-    let level = "LOW";
-    if (rain > 100 && soil > 70) level = "EXTREME";
-    else if (rain > 50 && soil > 50) level = "HIGH";
-    else if (rain > 20 || soil > 40) level = "ELEVATED";
+    // Weighted score 0–100
+    let score = 0;
+    // Rainfall weight
+    if (rain > 100) score += 35;
+    else if (rain > 50) score += 25;
+    else if (rain > 20) score += 12;
+    else score += Math.min(10, rain / 5);
 
-    return { 
-        level, 
-        confidence: 'MODERATE', 
-        status: 'DERIVED PROTOTYPE',
-        model_version: 'NOT DEPLOYED'
+    // Soil moisture
+    if (soil > 70) score += 25;
+    else if (soil > 50) score += 15;
+    else if (soil > 40) score += 8;
+    else score += soil / 10;
+
+    // Terrain slope (steep slopes amplify risk)
+    if (slope > 35) score += 20;
+    else if (slope > 25) score += 12;
+    else if (slope > 15) score += 6;
+
+    // NDVI: low vegetation → higher bare-soil risk
+    if (ndvi != null) {
+      if (ndvi < 0.25) score += 15;
+      else if (ndvi < 0.4) score += 8;
+      else score += 2;
+    }
+
+    // Blend with satellite susceptibility when present
+    if (satScore != null) {
+      score = Math.round(score * 0.65 + satScore * 0.35);
+    }
+
+    score = Math.max(0, Math.min(100, Math.round(score)));
+
+    let level = 'LOW';
+    if (score >= 80) level = 'EXTREME';
+    else if (score >= 60) level = 'HIGH';
+    else if (score >= 40) level = 'ELEVATED';
+    else if (score >= 25) level = 'MODERATE';
+
+    const factors = [];
+    if (rain > 20) factors.push({ name: 'rainfall_24h', value: rain, weight: 'high' });
+    if (soil > 40) factors.push({ name: 'soil_moisture', value: soil, weight: 'high' });
+    if (slope > 15) factors.push({ name: 'slope', value: slope, weight: 'medium' });
+    if (ndvi != null) factors.push({ name: 'ndvi', value: ndvi, weight: 'medium' });
+    if (elev > 0) factors.push({ name: 'elevation', value: elev, weight: 'low' });
+
+    return {
+      level,
+      score,
+      confidence: satScore != null || ndvi != null ? 'MODERATE' : 'LOW',
+      status: 'DERIVED PROTOTYPE',
+      model_version: 'NOT DEPLOYED',
+      factors,
+      inputs_used: {
+        rainfall_24h: rain,
+        soil_moisture: soil,
+        slope,
+        elevation: elev,
+        ndvi,
+        susceptibility_score: satScore,
+      },
     };
   }
 }

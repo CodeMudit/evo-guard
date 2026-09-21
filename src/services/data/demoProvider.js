@@ -22,7 +22,7 @@ class DemoProvider {
       models: [
         {
           id: "landslide-risk",
-          name: "EcoGuard Landslide Risk Model",
+          name: "EvoGuard Landslide Risk Model",
           version: "pending-training",
           status: "not_deployed",
           provider: "internal",

@@ -31,7 +31,7 @@ export class ErrorBoundary extends React.Component {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-red-800">System Failure Detected</h1>
-                <p className="text-red-600 mt-1">A critical error occurred in the EcoGuard system.</p>
+                <p className="text-red-600 mt-1">A critical error occurred in the EvoGuard system.</p>
               </div>
             </div>
             

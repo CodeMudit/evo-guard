@@ -42,38 +42,44 @@ export const nerRoadNetwork = {
   type: "FeatureCollection",
   features: [
     {
+      // Green — open corridor through the default map view
       type: "Feature",
-      properties: { name: "NH-40", status: "Open" },
+      properties: { name: "NH-40", status: "Open", id: "road-nh40" },
       geometry: {
         type: "LineString",
         coordinates: [
-          [91.738, 26.14],
-          [91.8, 25.57],
-          [92.0, 25.268] // AWS-1 area
+          [91.70, 25.30],
+          [91.72, 25.285],
+          [91.74, 25.27],
+          [91.76, 25.26],
+          [91.78, 25.25]
         ]
       }
     },
     {
+      // RED — fully blocked (click this for Road Intel + alternate route)
       type: "Feature",
-      properties: { name: "SH-12", status: "Partially Blocked" },
+      properties: { name: "SH-12 / Bypass", status: "Blocked", id: "road-sh12" },
       geometry: {
         type: "LineString",
         coordinates: [
-          [92.0, 25.268],
-          [92.2, 25.2],
-          [92.5, 25.1]
+          [91.72, 25.255],
+          [91.735, 25.268],
+          [91.75, 25.28],
+          [91.765, 25.29]
         ]
       }
     },
     {
+      // Amber — partially blocked
       type: "Feature",
-      properties: { name: "NH-27", status: "Open" },
+      properties: { name: "Link Road East", status: "Partially Blocked", id: "road-link-e" },
       geometry: {
         type: "LineString",
         coordinates: [
-          [91.0, 26.2],
-          [91.738, 26.14],
-          [92.5, 26.5]
+          [91.755, 25.25],
+          [91.77, 25.265],
+          [91.79, 25.28]
         ]
       }
     }
@@ -82,19 +88,14 @@ export const nerRoadNetwork = {
 
 // Heatmap points: [lat, lng, intensity]
 export const nerRiskHeatmapPoints = [
-  // High risk cluster around AWS-1 (Hill Sector)
   [25.268, 91.738, 0.9],
   [25.269, 91.737, 0.8],
   [25.270, 91.739, 0.95],
   [25.265, 91.740, 0.7],
   [25.266, 91.735, 0.85],
-  
-  // Moderate risk along river
   [25.280, 91.750, 0.5],
   [25.282, 91.755, 0.6],
   [25.285, 91.760, 0.55],
-  
-  // High risk spot
   [25.300, 91.700, 0.88],
   [25.302, 91.705, 0.75],
 ];
