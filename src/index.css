@@ -1,0 +1,120 @@
+@import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  
+  --color-page-bg: #f5f5f4; /* stone-100 */
+  --color-surface-primary: #ffffff;
+  --color-surface-secondary: #f8fafc; /* slate-50 */
+  --color-border: #e2e8f0; /* slate-200 */
+  
+  --color-text-primary: #1e293b; /* slate-800 */
+  --color-text-secondary: #475569; /* slate-600 */
+  --color-text-muted: #94a3b8; /* slate-400 */
+  
+  --color-status-stable: #10b981; /* emerald-500 */
+  --color-status-watch: #f59e0b; /* amber-500 */
+  --color-status-elevated: #f97316; /* orange-500 */
+  --color-status-high: #ea580c; /* orange-600 */
+  --color-status-critical: #ef4444; /* red-500 */
+  --color-status-info: #3b82f6; /* blue-500 */
+  --color-status-warning: #eab308; /* yellow-500 */
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    font-size: 14px; /* Denser text scale for operations dashboard */
+  }
+
+  body {
+    background-color: var(--color-page-bg);
+    color: var(--color-text-primary);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--color-text-primary);
+    font-weight: 600;
+  }
+
+  p {
+    color: var(--color-text-secondary);
+  }
+}
+
+@layer components {
+  /* Replace the old legacy cyber components globally */
+  .backdrop-blur-sm, .backdrop-blur-md, .backdrop-blur, .backdrop-blur-lg, .glass-panel {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background-color: var(--color-surface-primary) !important;
+    border: 1px solid var(--color-border) !important;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05) !important;
+  }
+
+  /* Strip neon effects */
+  .shadow-emerald-950\/50, .shadow-indigo-950\/50 {
+    box-shadow: none !important;
+  }
+}
+
+@layer utilities {
+  /* Clean scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-surface-secondary);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+}
+
+/* Custom Leaflet Light/Professional Styled Map Overlays */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  background-color: #e2e8f0 !important;
+  font-family: inherit;
+}
+
+/* Map Popups */
+.leaflet-popup-content-wrapper {
+  background-color: var(--color-surface-primary) !important;
+  color: var(--color-text-primary) !important;
+  border: 1px solid var(--color-border) !important;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
+  border-radius: 0.25rem !important;
+  padding: 0 !important;
+}
+
+.leaflet-popup-tip {
+  background-color: var(--color-surface-primary) !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+}
+
+/* Exempt specific map controls if needed */
+.leaflet-control-layers {
+  background: var(--color-surface-primary) !important;
+  border: 1px solid var(--color-border) !important;
+  color: var(--color-text-primary) !important;
+}

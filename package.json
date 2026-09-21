@@ -1,0 +1,44 @@
+{
+  "name": "evo_gaurd",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:frontend": "vite",
+    "dev:backend": "node backend/server.js",
+    "build": "vite build",
+    "lint": "npx oxlint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "browser-image-compression": "^2.0.2",
+    "firebase": "^12.19.0",
+    "i18next": "^26.4.2",
+    "leaflet": "^1.9.4",
+    "leaflet.heat": "^0.2.0",
+    "localforage": "^1.10.0",
+    "lodash": "^4.18.1",
+    "lucide-react": "^1.41.0",
+    "maplibre-gl": "^6.10.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "react-draggable": "^4.7.2",
+    "react-i18next": "^17.0.14",
+    "react-leaflet": "^5.0.0",
+    "react-map-gl": "^8.1.3",
+    "recharts": "^3.10.1",
+    "socket.io-client": "^4.8.3",
+    "tailwindcss": "^4.3.3",
+    "vite-plugin-pwa": "^1.3.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "@vitejs/plugin-react": "^6.1.0",
+    "concurrently": "^10.0.5",
+    "oxlint": "^1.79.0",
+    "vite": "^8.2.2"
+  }
+}
