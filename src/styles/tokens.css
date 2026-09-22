@@ -1,22 +1,33 @@
 :root {
-  --gov-navy: #0d2b4e;
-  --gov-navy-mid: #1a3a5c;
-  --gov-blue: #1e6091;
-  --gov-blue-hover: #2a7aad;
-  --gov-sky: #e8f4f8;
-  --gov-orange: #e67e22;
-  --gov-orange-dark: #d35400;
-  --gov-green: #3c9a40;
-  --gov-yellow: #f1c40f;
-  --gov-page-bg: #eef1f4;
+  /* NER Sentinel – deep teal institutional + terracotta accents */
+  --gov-primary: #0f3d3e;
+  --gov-primary-mid: #145a5b;
+  --gov-nav: #134e4a;
+  --gov-nav-hover: #0f766e;
+  --gov-accent: #c2410c;
+  --gov-accent-dark: #9a3412;
+  --gov-sky: #ecfdf5;           /* soft teal-tinted utility bar */
+  --gov-page-bg: #f1f5f9;
   --gov-panel: #ffffff;
-  --gov-border: #c5d4e3;
-  --gov-text: #222222;
-  --gov-text-secondary: #2c3e50;
-  --gov-text-muted: #5a6a7a;
-  --panel-radius: 2px;
+  --gov-border: #cbd5e1;
+  --gov-text: #0f172a;
+  --gov-text-secondary: #334155;
+  --gov-text-muted: #64748b;
+  --gov-success: #15803d;
+  --gov-warning: #d97706;
+  --gov-danger: #b91c1c;
+  --gov-yellow: #fbbf24;
+  --panel-radius: 6px;
 
-  /* Compatibility aliases – fix invisible text everywhere */
+  /* Compatibility aliases used across components */
+  --gov-navy: var(--gov-primary);
+  --gov-navy-mid: var(--gov-primary-mid);
+  --gov-blue: var(--gov-nav);
+  --gov-blue-hover: var(--gov-nav-hover);
+  --gov-orange: var(--gov-accent);
+  --gov-orange-dark: var(--gov-accent-dark);
+  --gov-green: var(--gov-success);
+
   --color-page-bg: var(--gov-page-bg);
   --color-surface-primary: var(--gov-panel);
   --color-surface-secondary: #f8fafc;

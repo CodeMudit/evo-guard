@@ -3,6 +3,7 @@ import { AppProvider, useApp } from "./context/AppContext";
 import { Header } from "./components/layout/Header";
 import { Footer } from "./components/layout/Footer";
 import { OfflineBanner } from "./components/layout/OfflineBanner";
+import { NERMapBackground } from "./components/layout/NERMapBackground";
 import { ToastContainer } from "./components/common/Toast";
 
 import { HomeDashboard } from "./pages/HomeDashboard";
@@ -35,7 +36,7 @@ const MainContent = () => {
         return <ReportsPage />;
       case "analytics":
         return (
-          <div className="max-w-[1600px] mx-auto p-3 space-y-4">
+          <div className="w-full px-3 md:px-4 lg:px-5 py-3 space-y-4 relative z-10">
             <MLPredictionsPage />
             <AnalyticsPage />
           </div>
@@ -56,14 +57,17 @@ const MainContent = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--gov-page-bg)] flex flex-col">
-      <Header />
-      <OfflineBanner />
-      <main id="main" className="flex-1 w-full">
-        {renderPage()}
-      </main>
-      <Footer />
-      <ToastContainer />
+    <div className="min-h-screen bg-[var(--gov-page-bg)] flex flex-col relative">
+      <NERMapBackground />
+      <div className="relative z-10 flex flex-col min-h-screen">
+        <Header />
+        <OfflineBanner />
+        <main id="main" className="flex-1 w-full">
+          {renderPage()}
+        </main>
+        <Footer />
+        <ToastContainer />
+      </div>
     </div>
   );
 };

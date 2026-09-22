@@ -1,45 +1,31 @@
 import React from "react";
-import { MOCK_VISITOR_STATS } from "../../data/mockContent";
+import { useTranslation } from "react-i18next";
 
-export const Footer = () => (
-  <footer className="mt-4">
-    <div className="bg-white border-t border-[var(--gov-border)] py-3">
-      <div className="max-w-[1600px] mx-auto px-3">
-        <p className="text-[12px] font-semibold text-[var(--gov-navy)] mb-2">Related resources (placeholders)</p>
-        <div className="flex flex-wrap gap-3">
-          {["ISRO", "Bhuvan", "MOSDAC", "IMD", "NDMA", "DoNER"].map((name) => (
-            <div
-              key={name}
-              className="w-16 h-12 border border-[var(--gov-border)] rounded-sm flex items-center justify-center text-[10px] font-bold text-[var(--gov-text-muted)] bg-[var(--gov-page-bg)]"
-              title="Placeholder – not an official link"
-            >
-              {name}
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
+export const Footer = () => {
+  const { t } = useTranslation();
 
-    <div className="bg-[var(--gov-navy)] text-white text-[11.5px]">
-      <div className="max-w-[1600px] mx-auto px-3 py-2.5 flex flex-wrap items-center justify-between gap-2">
-        <div className="flex flex-wrap gap-3">
-          {/* TODO: replace with real project pages when available */}
-          <a href="#" className="hover:underline">Privacy Policy</a>
-          <span>|</span>
-          <a href="#" className="hover:underline">Terms</a>
-          <span>|</span>
-          <a href="#" className="hover:underline">Disclaimer</a>
-          <span>|</span>
-          <a href="#" className="hover:underline">Contact</a>
-        </div>
-        <div className="text-[11px]">
-          Visitors (demo): Today {MOCK_VISITOR_STATS.today} · Weekly {MOCK_VISITOR_STATS.weekly} · Total {MOCK_VISITOR_STATS.total}
+  return (
+    <footer className="bg-[var(--gov-primary)] text-white mt-auto relative z-10">
+      <div className="w-full px-4 py-4">
+        <div className="flex flex-wrap items-start justify-between gap-6">
+          <div className="max-w-md">
+            <h3 className="font-semibold text-[15px] mb-1">{t("appName")}</h3>
+            <p className="text-[13px] text-white/80 leading-relaxed">
+              {t("appTagline")} — SIH26001 prototype for the North-Eastern Regional Node for Disaster Risk Reduction.
+            </p>
+          </div>
+          <div className="text-[13px] text-white/80 space-y-1">
+            <p>Ministry of DoNER · NESAC</p>
+            <p>Smart India Hackathon 2026</p>
+          </div>
         </div>
       </div>
-      <div className="max-w-[1600px] mx-auto px-3 py-1.5 border-t border-white/20 flex flex-wrap justify-between text-[11px] opacity-90">
-        <span>Last updated: 21.09.2026</span>
-        <span>© 2026 EcoWatch AI · SIH26001 Team · Prototype — simulated data</span>
+      <div className="border-t border-white/15">
+        <div className="w-full px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 text-[12px] text-white/75">
+          <span>© {new Date().getFullYear()} EvoGuard · Prototype system with simulated data</span>
+          <span>Built for operational situational awareness in the NER</span>
+        </div>
       </div>
-    </div>
-  </footer>
-);
+    </footer>
+  );
+};

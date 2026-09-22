@@ -14,16 +14,16 @@ const commonEn = {
   prototypeBadge: "Prototype — simulated data",
   sihLabel: "NER-DRR Prototype · SIH26001",
 
-  // Nav
-  nav_home: "HOME",
-  nav_about: "About",
-  nav_dashboard: "Dashboard",
-  nav_geoweb: "GeoWeb Products",
-  nav_reports: "Reports",
-  nav_resources: "Resources",
-  nav_contact: "Contact us",
-  nav_fieldApp: "Field App",
-  nav_archive: "Archive",
+   // Nav
+  nav_home: "Overview",
+  nav_about: "About EvoGuard",
+  nav_dashboard: "Risk Monitor",
+  nav_geoweb: "Spatial Layers",
+  nav_reports: "Incident Reports",
+  nav_resources: "Analytics Hub",
+  nav_contact: "Support",
+  nav_fieldApp: "Field Toolkit",
+  nav_archive: "Records Archive",
   nav_alerts: "Alerts",
   nav_settings: "Settings",
 
