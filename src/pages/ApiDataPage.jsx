@@ -4,7 +4,7 @@ import { ApiKeyMasker } from "../components/api/ApiKeyMasker";
 import { DataFreshnessBadge } from "../components/common/DataFreshnessBadge";
 import { exportToCsv } from "../utils/formatters";
 import { generateHistoryData } from "../data/mockHistory";
-import { CloudSun, Key, Download, CheckCircle2, Database } from "lucide-react";
+import { Download, CheckCircle2, Database, Key } from "lucide-react";
 
 export const ApiDataPage = () => {
   const { apiData, addToast } = useApp();
@@ -12,80 +12,60 @@ export const ApiDataPage = () => {
 
   const handleExportCsv = () => {
     const { apiHistory } = generateHistoryData(timeframe);
-    exportToCsv(`evoguard-api-history-${timeframe}.csv`, apiHistory);
+    exportToCsv(`ecowatch-api-history-${timeframe}.csv`, apiHistory);
     addToast("Export Started", `Downloaded API history data (${timeframe}) as CSV.`, "success");
   };
 
   return (
-    <div className="space-y-6 pb-12 h-full flex flex-col">
-      {/* Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[var(--color-surface-primary)] p-5 rounded border border-[var(--color-border)] shadow-sm shrink-0">
-        <div>
-          <h2 className="text-xl font-bold text-[var(--color-text-primary)] tracking-tight flex items-center gap-2">
-            <Database className="w-6 h-6 text-purple-600" />
-            External Data Sources
-          </h2>
-          <p className="text-xs text-[var(--color-text-secondary)] mt-1 font-medium">
-            Region-Wide Weather & Environmental API Feeds
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <button
-            onClick={handleExportCsv}
-            className="px-4 py-2 rounded bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-xs font-bold flex items-center gap-1.5 transition-colors shadow-sm uppercase tracking-wider"
-          >
-            <Download className="w-4 h-4" />
-            EXPORT DATA (CSV)
-          </button>
-        </div>
+    <div className="bg-[var(--gov-page-bg)]">
+      <div className="bg-[var(--gov-navy)] text-white px-3 py-1.5 flex items-center justify-between">
+        <h2 className="text-[14px] font-bold">GeoWeb Products — External Data Sources</h2>
+        <button
+          onClick={handleExportCsv}
+          className="px-3 py-1 bg-white/20 hover:bg-white/30 text-white text-[11.5px] font-semibold flex items-center gap-1.5"
+        >
+          <Download className="w-3.5 h-3.5" /> EXPORT CSV
+        </button>
       </div>
 
-      {/* API Diagnostics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-4 rounded bg-white border border-[var(--color-border)] space-y-1 shadow-sm">
-          <span className="text-[10px] text-[var(--color-text-secondary)] font-bold uppercase block">Connection Status</span>
-          <span className="text-base font-bold text-emerald-600 flex items-center gap-1.5">
-            <CheckCircle2 className="w-4.5 h-4.5" /> 200 OK — Connected
-          </span>
-          <span className="text-[10px] text-[var(--color-text-muted)] font-mono block font-bold">LATENCY: {apiData.latency}</span>
+      <div className="max-w-[1600px] mx-auto p-3 space-y-3">
+        {/* Status cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
+          {[
+            { label: "Connection Status", value: "200 OK — Connected", sub: `LATENCY: ${apiData?.latency || "—"}`, color: "text-emerald-700" },
+            { label: "API Provider", value: apiData?.provider || "—", sub: "REST API v2 Endpoint", color: "text-[var(--gov-text)]" },
+            { label: "Requests Today", value: `${apiData?.requestsToday || 0} reqs`, sub: "0 Errors (100% Reliability)", color: "text-[var(--gov-text)]" },
+            { label: "Data Freshness", value: apiData?.dataFreshness || "—", sub: null, color: "text-[var(--gov-navy)]" },
+          ].map((card) => (
+            <div key={card.label} className="bg-white border border-[var(--gov-border)]">
+              <div className="bg-[var(--gov-navy)] text-white px-2 py-1 text-[11px] font-bold uppercase">{card.label}</div>
+              <div className="p-2.5">
+                <p className={`text-[14px] font-bold ${card.color}`}>{card.value}</p>
+                {card.sub && <p className="text-[11px] text-[var(--gov-text-muted)] mt-0.5">{card.sub}</p>}
+                {card.label === "Data Freshness" && (
+                  <div className="mt-1">
+                    <DataFreshnessBadge status="LIVE" timestamp={apiData?.lastUpdate} />
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
 
-        <div className="p-4 rounded bg-white border border-[var(--color-border)] space-y-1 shadow-sm">
-          <span className="text-[10px] text-[var(--color-text-secondary)] font-bold uppercase block">API Provider</span>
-          <span className="text-base font-bold text-[var(--color-text-primary)] block truncate">{apiData.provider}</span>
-          <span className="text-[10px] text-purple-600 block font-bold uppercase tracking-wider">Rest API v2 Endpoint</span>
-        </div>
-
-        <div className="p-4 rounded bg-white border border-[var(--color-border)] space-y-1 shadow-sm">
-          <span className="text-[10px] text-[var(--color-text-secondary)] font-bold uppercase block">Requests Today</span>
-          <span className="text-base font-bold text-[var(--color-text-primary)] font-mono">{apiData.requestsToday} reqs</span>
-          <span className="text-[10px] text-emerald-600 block font-bold uppercase tracking-wider">0 Errors (100% Reliability)</span>
-        </div>
-
-        <div className="p-4 rounded bg-white border border-[var(--color-border)] space-y-1 shadow-sm">
-          <span className="text-[10px] text-[var(--color-text-secondary)] font-bold uppercase block">Data Freshness</span>
-          <span className="text-base font-bold text-purple-600 mb-1">{apiData.dataFreshness}</span>
-          <DataFreshnessBadge status="LIVE" timestamp={apiData.lastUpdate} />
-        </div>
-      </div>
-
-      {/* API Key & Endpoint Security Card */}
-      <div className="p-5 rounded bg-slate-50 border border-slate-200 space-y-4 shadow-sm">
-        <h3 className="text-sm font-bold text-[var(--color-text-primary)] tracking-tight flex items-center gap-2 uppercase">
-          <Key className="w-4 h-4 text-purple-600" />
-          API Credential & Endpoint Configuration
-        </h3>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-          <ApiKeyMasker apiKey={apiData.apiKeyMasked} />
-          <div className="p-2.5 rounded bg-white border border-slate-200 font-mono text-[var(--color-text-primary)] flex items-center justify-between shadow-sm">
-            <span className="text-[var(--color-text-muted)] text-[10px] font-bold">ENDPOINT:</span>
-            <span className="text-slate-600 text-[11px] truncate font-bold">{apiData.apiEndpoint}</span>
+        {/* Credentials */}
+        <div className="bg-white border border-[var(--gov-border)]">
+          <div className="bg-[var(--gov-navy)] text-white px-2 py-1.5 font-bold text-[13px] flex items-center gap-2">
+            <Key className="w-4 h-4" /> API Credential & Endpoint Configuration
+          </div>
+          <div className="p-3 grid grid-cols-1 md:grid-cols-2 gap-3 text-[12px]">
+            <ApiKeyMasker apiKey={apiData?.apiKeyMasked} />
+            <div className="border border-[var(--gov-border)] p-2 font-mono flex items-center justify-between">
+              <span className="text-[var(--gov-text-muted)] text-[10px] font-bold">ENDPOINT:</span>
+              <span className="text-[var(--gov-text)] text-[11px] truncate font-bold">{apiData?.apiEndpoint || "—"}</span>
+            </div>
           </div>
         </div>
       </div>
-
     </div>
   );
 };

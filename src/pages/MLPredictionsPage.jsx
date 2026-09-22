@@ -2,13 +2,26 @@ import React, { useState } from "react";
 import { useApp } from "../context/AppContext";
 import { MLPredictionCenter } from "../components/ml/MLPredictionCenter";
 import { MLHistoryChart } from "../components/ml/MLHistoryChart";
+import { Sliders, RefreshCw } from "lucide-react";
 
-import { BrainCircuit, Sliders, RefreshCw, Cpu } from "lucide-react";
+/* Normalization ranges for progress bars (D4) */
+const RANGES = {
+  soilMoisture: { min: 0, max: 100, unit: "%" },
+  rainfall: { min: 0, max: 100, unit: "mm/h" },
+  waterLevel: { min: 0, max: 5, unit: "m" },
+  pm25: { min: 0, max: 250, unit: "µg/m³" },
+  aqi: { min: 0, max: 500, unit: "" },
+};
+
+const toPercent = (key, value) => {
+  const r = RANGES[key];
+  if (!r) return 0;
+  return Math.min(100, Math.max(0, ((value - r.min) / (r.max - r.min)) * 100));
+};
 
 export const MLPredictionsPage = () => {
-  const { thresholds, addToast } = useApp();
+  const { addToast } = useApp();
 
-  // Interactive Scenario Simulator State
   const [simValues, setSimValues] = useState({
     soilMoisture: 78,
     rainfall: 42.6,
@@ -17,17 +30,16 @@ export const MLPredictionsPage = () => {
     aqi: 78,
   });
 
-  // simRisk is dynamically computed from sandbox inputs
   const calculateSimRisk = (vals) => {
     const { soilMoisture, rainfall, waterLevel, pm25 } = vals;
-    
-    const landslideScore = Math.min(100, Math.round((soilMoisture * 0.5) + (rainfall * 0.8)));
-    const floodScore = Math.min(100, Math.round((rainfall * 0.4) + (waterLevel * 20)));
+    const landslideScore = Math.min(100, Math.round(soilMoisture * 0.5 + rainfall * 0.8));
+    const floodScore = Math.min(100, Math.round(rainfall * 0.4 + waterLevel * 20));
     const airQualityScore = Math.min(100, Math.round((pm25 / 250) * 100));
-    const overallScore = Math.round((landslideScore * 0.5) + (floodScore * 0.3) + (airQualityScore * 0.2));
-    
-    const getLevel = (score) => score >= 75 ? "EXTREME" : score >= 60 ? "HIGH" : score >= 40 ? "MODERATE" : "LOW";
-    
+    const overallScore = Math.round(
+      landslideScore * 0.5 + floodScore * 0.3 + airQualityScore * 0.2
+    );
+    const getLevel = (s) =>
+      s >= 75 ? "EXTREME" : s >= 60 ? "HIGH" : s >= 40 ? "MODERATE" : "LOW";
     return {
       overallScore,
       landslideScore,
@@ -42,157 +54,136 @@ export const MLPredictionsPage = () => {
 
   const simRisk = calculateSimRisk(simValues);
 
+  /* Dynamic rationale from current inputs (A3) */
+  const rationale = [];
+  if (simValues.soilMoisture >= 70)
+    rationale.push(
+      `Soil moisture at ${simValues.soilMoisture}% exceeds the 70% saturation threshold.`
+    );
+  if (simValues.rainfall >= 30)
+    rationale.push(
+      `Rainfall intensity of ${simValues.rainfall} mm/h is elevated for the sector.`
+    );
+  if (simValues.waterLevel >= 2.0)
+    rationale.push(
+      `River water level at ${simValues.waterLevel} m is approaching embankment warning line.`
+    );
+  if (simValues.pm25 >= 60)
+    rationale.push(`PM2.5 at ${simValues.pm25} µg/m³ contributes to air-quality risk.`);
+  if (rationale.length === 0)
+    rationale.push("All telemetry inputs currently within normal operating bands.");
+
   return (
-    <div className="space-y-6 pb-12 h-full flex flex-col">
-      {/* Page Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[var(--color-surface-primary)] p-5 rounded border border-[var(--color-border)] shadow-sm shrink-0">
-        <div>
-          <h2 className="text-xl font-bold text-[var(--color-text-primary)] tracking-tight flex items-center gap-2">
-            <Cpu className="w-6 h-6 text-blue-600" />
-            Risk Simulation & Forecast Models
-          </h2>
-          <p className="text-xs text-[var(--color-text-secondary)] mt-1 font-medium">
-            Real-time Predictive Analytics, Feature Weights & Scenario Simulation Sandbox
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <span className="px-3 py-1.5 rounded bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold uppercase tracking-wider">
-            Model v1.2 Active
-          </span>
-        </div>
+    <div className="bg-[var(--gov-page-bg)]">
+      <div className="bg-[var(--gov-navy)] text-white px-3 py-1.5 flex items-center justify-between">
+        <h2 className="text-[14px] font-bold">
+          Resources — Risk Simulation & Forecast Models
+        </h2>
+        <span className="px-2 py-0.5 bg-white/20 text-[11px] font-semibold">
+          Model v1.2 Active
+        </span>
       </div>
 
-      {/* Main ML Center */}
-      <MLPredictionCenter />
+      <div className="max-w-[1600px] mx-auto p-3 space-y-3">
+        <MLPredictionCenter />
 
-      {/* Interactive Scenario Sandbox Simulator */}
-      <div className="p-6 rounded bg-white border border-[var(--color-border)] shadow-sm space-y-4">
-        <div className="flex items-center justify-between border-b border-[var(--color-border)] pb-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded bg-indigo-50 text-indigo-600 border border-indigo-100">
-              <Sliders className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-base font-bold text-[var(--color-text-primary)] tracking-tight">
-                Scenario Simulation Sandbox
-              </h3>
-              <p className="text-xs text-[var(--color-text-secondary)] font-medium">
-                Adjust telemetry inputs to test instant risk score inference logic
-              </p>
-            </div>
+        {/* Scenario Sandbox */}
+        <div className="bg-white border border-[var(--gov-border)]">
+          <div className="bg-[var(--gov-navy)] text-white px-2 py-1.5 font-bold text-[13px] flex items-center justify-between">
+            <span className="flex items-center gap-2">
+              <Sliders className="w-4 h-4" /> Scenario Simulation Sandbox
+            </span>
+            <button
+              onClick={() => {
+                setSimValues({
+                  soilMoisture: 40,
+                  rainfall: 10,
+                  waterLevel: 1.0,
+                  pm25: 30,
+                  aqi: 45,
+                });
+                addToast("Sandbox Reset", "Reset sensor values to baseline", "info");
+              }}
+              className="px-2 py-0.5 bg-white/20 hover:bg-white/30 text-[11px] font-semibold flex items-center gap-1"
+            >
+              <RefreshCw className="w-3.5 h-3.5" /> RESET
+            </button>
           </div>
 
-          <button
-            onClick={() => {
-              setSimValues({ soilMoisture: 40, rainfall: 10, waterLevel: 1.0, pm25: 30, aqi: 45 });
-              addToast("Sandbox Reset", "Reset sensor values to baseline normal levels", "info");
-            }}
-            className="px-3 py-1.5 rounded bg-white border border-[var(--color-border)] hover:bg-slate-50 text-[var(--color-text-primary)] text-xs font-bold flex items-center gap-1.5 transition-colors shadow-sm"
-          >
-            <RefreshCw className="w-3.5 h-3.5" />
-            RESET TO BASELINE
-          </button>
-        </div>
-
-        {/* Sliders Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-5 rounded bg-slate-50 border border-slate-200 text-xs">
-          {/* Soil Moisture Slider */}
-          <div className="space-y-2">
-            <div className="flex justify-between font-bold text-[var(--color-text-primary)]">
-              <span>Soil Moisture (AWS-1)</span>
-              <span className="text-blue-700 font-mono">{simValues.soilMoisture} %</span>
-            </div>
-            <input
-              type="range"
-              min={10}
-              max={100}
-              value={simValues.soilMoisture}
-              onChange={(e) => setSimValues({ ...simValues, soilMoisture: Number(e.target.value) })}
-              className="w-full accent-blue-600"
-            />
+          <div className="p-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-[12px]">
+            {[
+              { key: "soilMoisture", label: "Soil Moisture (AWS-1)" },
+              { key: "rainfall", label: "Rainfall Intensity" },
+              { key: "waterLevel", label: "River Water Level" },
+              { key: "pm25", label: "PM2.5" },
+            ].map((s) => (
+              <div key={s.key} className="border border-[var(--gov-border)] p-2">
+                <div className="flex justify-between font-bold text-[var(--gov-text)] mb-1">
+                  <span>{s.label}</span>
+                  <span className="text-[var(--gov-navy)] font-mono">
+                    {simValues[s.key]} {RANGES[s.key].unit}
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min={RANGES[s.key].min}
+                  max={RANGES[s.key].max}
+                  step={s.key === "waterLevel" ? 0.1 : 1}
+                  value={simValues[s.key]}
+                  onChange={(e) =>
+                    setSimValues({ ...simValues, [s.key]: Number(e.target.value) })
+                  }
+                  className="w-full accent-[var(--gov-blue)]"
+                />
+                {/* Normalized bar (D4) */}
+                <div className="mt-1 h-1.5 bg-[var(--gov-page-bg)] rounded-sm overflow-hidden">
+                  <div
+                    className="h-full bg-[var(--gov-blue)]"
+                    style={{ width: `${toPercent(s.key, simValues[s.key])}%` }}
+                  />
+                </div>
+              </div>
+            ))}
           </div>
 
-          {/* Rainfall Intensity Slider */}
-          <div className="space-y-2">
-            <div className="flex justify-between font-bold text-[var(--color-text-primary)]">
-              <span>Rainfall (AWS-1)</span>
-              <span className="text-indigo-700 font-mono">{simValues.rainfall} mm/h</span>
-            </div>
-            <input
-              type="range"
-              min={0}
-              max={100}
-              value={simValues.rainfall}
-              onChange={(e) => setSimValues({ ...simValues, rainfall: Number(e.target.value) })}
-              className="w-full accent-indigo-600"
-            />
-          </div>
-
-          {/* Water Level Slider */}
-          <div className="space-y-2">
-            <div className="flex justify-between font-bold text-[var(--color-text-primary)]">
-              <span>River Level (Station Alpha)</span>
-              <span className="text-cyan-700 font-mono">{simValues.waterLevel} m</span>
-            </div>
-            <input
-              type="range"
-              min={0.5}
-              max={5.0}
-              step={0.1}
-              value={simValues.waterLevel}
-              onChange={(e) => setSimValues({ ...simValues, waterLevel: Number(e.target.value) })}
-              className="w-full accent-cyan-600"
-            />
-          </div>
-
-          {/* PM2.5 Air Slider */}
-          <div className="space-y-2">
-            <div className="flex justify-between font-bold text-[var(--color-text-primary)]">
-              <span>PM2.5 (Station Alpha)</span>
-              <span className="text-emerald-700 font-mono">{simValues.pm25} µg/m³</span>
-            </div>
-            <input
-              type="range"
-              min={10}
-              max={250}
-              value={simValues.pm25}
-              onChange={(e) => setSimValues({ ...simValues, pm25: Number(e.target.value) })}
-              className="w-full accent-emerald-600"
-            />
+          {/* Score cards */}
+          <div className="p-3 grid grid-cols-2 sm:grid-cols-4 gap-2 border-t border-[var(--gov-border)]">
+            {[
+              { label: "Simulated Score", score: simRisk.overallScore, level: simRisk.overallLevel },
+              { label: "Landslide Risk", score: simRisk.landslideScore, level: simRisk.landslideLevel },
+              { label: "Flood Risk", score: simRisk.floodScore, level: simRisk.floodLevel },
+              { label: "Air Quality Risk", score: simRisk.airQualityScore, level: simRisk.airQualityLevel },
+            ].map((c) => (
+              <div key={c.label} className="border border-[var(--gov-border)] p-2 text-center">
+                <span className="text-[10px] text-[var(--gov-text-muted)] font-bold uppercase block">
+                  {c.label}
+                </span>
+                <span className="text-[20px] font-bold text-[var(--gov-text)]">{c.score}</span>
+                <span className="text-[10px] font-bold block mt-0.5 px-1.5 py-0.5 bg-[var(--gov-page-bg)] text-[var(--gov-text)] inline-block uppercase">
+                  {c.level}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Real-time Recalculated Simulated Output Display */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 rounded bg-[var(--color-surface-secondary)] border border-[var(--color-border)] text-center">
-          <div className="p-3 rounded bg-white border border-slate-200 shadow-sm">
-            <span className="text-[10px] text-[var(--color-text-secondary)] font-bold uppercase block mb-1">Simulated Score</span>
-            <span className="text-2xl font-black text-[var(--color-text-primary)]">{simRisk.overallScore} <span className="text-xs text-[var(--color-text-muted)]">/ 100</span></span>
-            <span className="text-[10px] text-blue-700 font-bold block uppercase mt-1 px-2 py-0.5 bg-blue-50 rounded inline-block">{simRisk.overallLevel}</span>
+        {/* Fusion Triggers – populated (A3) */}
+        <div className="bg-white border border-[var(--gov-border)]">
+          <div className="bg-[var(--gov-navy)] text-white px-2 py-1.5 text-[12px] font-bold">
+            FUSION TRIGGERS — Event Rationale
           </div>
-
-          <div className="p-3 rounded bg-white border border-slate-200 shadow-sm">
-            <span className="text-[10px] text-[var(--color-text-secondary)] font-bold uppercase block mb-1">Landslide Risk</span>
-            <span className="text-2xl font-black text-red-600">{simRisk.landslideScore} <span className="text-xs text-[var(--color-text-muted)]">/ 100</span></span>
-            <span className="text-[10px] text-red-700 font-bold block uppercase mt-1 px-2 py-0.5 bg-red-50 rounded inline-block">{simRisk.landslideLevel}</span>
-          </div>
-
-          <div className="p-3 rounded bg-white border border-slate-200 shadow-sm">
-            <span className="text-[10px] text-[var(--color-text-secondary)] font-bold uppercase block mb-1">Flood Risk</span>
-            <span className="text-2xl font-black text-cyan-600">{simRisk.floodScore} <span className="text-xs text-[var(--color-text-muted)]">/ 100</span></span>
-            <span className="text-[10px] text-cyan-700 font-bold block uppercase mt-1 px-2 py-0.5 bg-cyan-50 rounded inline-block">{simRisk.floodLevel}</span>
-          </div>
-
-          <div className="p-3 rounded bg-white border border-slate-200 shadow-sm">
-            <span className="text-[10px] text-[var(--color-text-secondary)] font-bold uppercase block mb-1">Air Quality Risk</span>
-            <span className="text-2xl font-black text-emerald-600">{simRisk.airQualityScore} <span className="text-xs text-[var(--color-text-muted)]">/ 100</span></span>
-            <span className="text-[10px] text-emerald-700 font-bold block uppercase mt-1 px-2 py-0.5 bg-emerald-50 rounded inline-block">{simRisk.airQualityLevel}</span>
+          <div className="p-3 text-[12px] text-[var(--gov-text)] space-y-1">
+            {rationale.map((line, i) => (
+              <p key={i}>• {line}</p>
+            ))}
+            <p className="text-[var(--gov-text-secondary)] mt-1">
+              Composite score is driven by the weighted combination of the factors above.
+            </p>
           </div>
         </div>
+
+        <MLHistoryChart />
       </div>
-
-      {/* History Chart */}
-      <MLHistoryChart />
     </div>
   );
 };

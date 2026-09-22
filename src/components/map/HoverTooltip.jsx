@@ -1,156 +1,171 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { useMapEvents } from 'react-leaflet';
-import throttle from 'lodash/throttle';
-import { fetchPointIntelligence, getCachedOrNull } from '../../services/pointIntelligenceService';
-import { predictRisk } from '../../services/data/riskService';
+import React, { useState, useEffect, useMemo, useRef } from "react";
+import { useMapEvents } from "react-leaflet";
+import throttle from "lodash/throttle";
+import { fetchPointIntelligence, getCachedOrNull } from "../../services/pointIntelligenceService";
+import { predictRisk } from "../../services/data/riskService";
+import { createPortal } from "react-dom";
 
 /**
- * Fixed compact intelligence strip — updates as the cursor moves,
- * but stays in one place on the map (bottom center) instead of a large floating tooltip.
+ * Listens to map mousemove (must be a child of MapContainer).
+ * Calls onHoverUpdate so the parent can render the status bar OUTSIDE MapContainer
+ * (avoids Leaflet pane / overflow clipping at embedded size).
  */
-const useMapHoverData = (throttleMs = 180) => {
-    const [hoverData, setHoverData] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [riskPrediction, setRiskPrediction] = useState(null);
-    const [coords, setCoords] = useState(null);
-    const abortControllerRef = useRef(null);
-    const positionRef = useRef(null);
+export const MapHoverListener = ({ onHoverUpdate }) => {
+  const abortControllerRef = useRef(null);
+  const positionRef = useRef(null);
 
-    const handleMouseMove = useMemo(
-        () =>
-            throttle(
-                async (e) => {
-                    const { lat, lng } = e.latlng;
-                    positionRef.current = {
-                        lat: lat.toFixed(4),
-                        lng: lng.toFixed(4),
-                    };
-                    setCoords({ lat: lat.toFixed(4), lng: lng.toFixed(4) });
+  const handleMouseMove = useMemo(
+    () =>
+      throttle(
+        async (e) => {
+          const { lat, lng } = e.latlng;
+          const coordKey = `${lat.toFixed(4)},${lng.toFixed(4)}`;
+          positionRef.current = coordKey;
 
-                    if (abortControllerRef.current) abortControllerRef.current.abort();
+          const coords = { lat: lat.toFixed(4), lng: lng.toFixed(4) };
+          onHoverUpdate?.({ coords, isLoading: true });
 
-                    const cachedData = getCachedOrNull(lat, lng, { allowStale: true });
-                    if (cachedData) {
-                        if (positionRef.current.lat === lat.toFixed(4)) {
-                            setHoverData(cachedData);
-                            predictRisk(cachedData).then((risk) => {
-                                if (positionRef.current.lat === lat.toFixed(4)) {
-                                    setRiskPrediction(risk);
-                                }
-                            });
-                            setIsLoading(cachedData.freshness === 'STALE');
-                        }
-                        if (cachedData.freshness === 'CACHED') return;
-                    } else {
-                        setIsLoading(true);
-                    }
+          if (abortControllerRef.current) abortControllerRef.current.abort();
 
-                    abortControllerRef.current = new AbortController();
-                    try {
-                        const data = await fetchPointIntelligence(
-                            lat,
-                            lng,
-                            abortControllerRef.current.signal
-                        );
-                        const risk = await predictRisk(data);
-                        if (positionRef.current.lat === lat.toFixed(4)) {
-                            setHoverData(data);
-                            setRiskPrediction(risk);
-                            setIsLoading(false);
-                        }
-                    } catch (err) {
-                        if (err.message !== 'Request aborted') setIsLoading(false);
-                    }
-                },
-                throttleMs,
-                { leading: false, trailing: true }
-            ),
-        [throttleMs]
-    );
+          const cachedData = getCachedOrNull(lat, lng, { allowStale: true });
+          if (cachedData) {
+            if (positionRef.current === coordKey) {
+              const risk = await predictRisk(cachedData);
+              if (positionRef.current === coordKey) {
+                onHoverUpdate?.({
+                  coords,
+                  hoverData: cachedData,
+                  riskPrediction: risk,
+                  isLoading: cachedData.freshness === "STALE",
+                });
+              }
+            }
+            if (cachedData.freshness === "CACHED") return;
+          }
 
-    useMapEvents({
-        mousemove: handleMouseMove,
-        mouseout: () => {
-            handleMouseMove.cancel();
-            if (abortControllerRef.current) abortControllerRef.current.abort();
-            // Keep last reading visible; clear only loading state
-            setIsLoading(false);
+          abortControllerRef.current = new AbortController();
+          try {
+            const data = await fetchPointIntelligence(
+              lat,
+              lng,
+              abortControllerRef.current.signal
+            );
+            const risk = await predictRisk(data);
+            if (positionRef.current === coordKey) {
+              onHoverUpdate?.({
+                coords,
+                hoverData: data,
+                riskPrediction: risk,
+                isLoading: false,
+              });
+            }
+          } catch (err) {
+            if (err.message !== "Request aborted") {
+              onHoverUpdate?.({ coords, isLoading: false });
+            }
+          }
         },
-    });
+        180,
+        { leading: false, trailing: true }
+      ),
+    [onHoverUpdate]
+  );
 
-    useEffect(() => {
-        return () => {
-            handleMouseMove.cancel();
-            if (abortControllerRef.current) abortControllerRef.current.abort();
-        };
-    }, [handleMouseMove]);
+  useMapEvents({
+    mousemove: handleMouseMove,
+    mouseout: () => {
+      handleMouseMove.cancel();
+      if (abortControllerRef.current) abortControllerRef.current.abort();
+      onHoverUpdate?.((prev) =>
+        prev ? { ...prev, isLoading: false } : prev
+      );
+    },
+  });
 
-    return { hoverData, riskPrediction, isLoading, coords };
+  useEffect(() => {
+    return () => {
+      handleMouseMove.cancel();
+      if (abortControllerRef.current) abortControllerRef.current.abort();
+    };
+  }, [handleMouseMove]);
+
+  return null;
 };
 
-export const HoverTooltip = () => {
-    const { hoverData, riskPrediction, isLoading, coords } = useMapHoverData(180);
+const val = (v) =>
+  v !== undefined && v !== null && v !== "" && v !== "—" ? v : "N/A";
 
-    // Always show the bar once the user has moved over the map at least once
-    if (!coords && !hoverData) return null;
+/**
+ * Status bar UI — render as sibling of MapContainer inside a position:relative wrapper.
+ * Not a child of MapContainer (prevents clipping at default card size).
+ */
+export const HoverStatusBar = ({ hoverState }) => {
+  if (!hoverState?.coords) return null;
 
-    const rain = hoverData?.rainfall?.rain24h?.value ?? '—';
-    const wind = hoverData?.weather?.windSpeed?.value ?? '—';
-    const soil = hoverData?.soil?.moisture?.value ?? '—';
-    const elev = hoverData?.terrain?.elevation?.value ?? '—';
-    const risk = riskPrediction?.level ?? '—';
-    const sus = hoverData?.susceptibility?.level ?? '—';
-    const fresh = hoverData?.freshness ?? (isLoading ? '…' : '—');
+  const { coords, hoverData, riskPrediction, isLoading } = hoverState;
+  const rain = val(hoverData?.rainfall?.rain24h?.value);
+  const wind = val(hoverData?.weather?.windSpeed?.value);
+  const soil = val(hoverData?.soil?.moisture?.value);
+  const elev = val(hoverData?.terrain?.elevation?.value);
+  const risk = riskPrediction?.level ?? "N/A";
+  const sus = hoverData?.susceptibility?.level ?? "N/A";
+  const fresh = hoverData?.freshness ?? (isLoading ? "…" : "N/A");
 
-    const riskColor =
-        risk === 'HIGH' || risk === 'EXTREME'
-            ? 'text-red-600'
-            : risk === 'ELEVATED' || risk === 'MODERATE'
-              ? 'text-amber-600'
-              : 'text-emerald-600';
+  const riskColor =
+    risk === "HIGH" || risk === "EXTREME"
+      ? "text-red-600"
+      : risk === "ELEVATED" || risk === "MODERATE"
+      ? "text-amber-600"
+      : "text-emerald-600";
 
-    return (
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-[1100] pointer-events-none w-[min(92%,720px)]">
-            <div className="bg-[var(--color-surface-primary)]/95 backdrop-blur-sm border border-[var(--color-border)] rounded-lg shadow-lg px-3 py-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-[var(--color-text-primary)]">
-                <span className="font-mono text-[10px] text-[var(--color-text-muted)] whitespace-nowrap">
-                    {coords ? `${coords.lat}°N ${coords.lng}°E` : '—'}
-                </span>
-                <span className="text-[var(--color-border)] hidden sm:inline">|</span>
-                <span className="whitespace-nowrap">
-                    Rain <b className="text-sky-700">{rain}</b>
-                    <span className="text-[var(--color-text-muted)]"> mm/24h</span>
-                </span>
-                <span className="whitespace-nowrap">
-                    Wind <b className="text-sky-700">{wind}</b>
-                    <span className="text-[var(--color-text-muted)]"> km/h</span>
-                </span>
-                <span className="whitespace-nowrap">
-                    Soil <b className="text-sky-700">{soil}</b>
-                    <span className="text-[var(--color-text-muted)]">%</span>
-                </span>
-                <span className="whitespace-nowrap">
-                    Elev <b className="text-sky-700">{elev}</b>
-                    <span className="text-[var(--color-text-muted)]"> m</span>
-                </span>
-                <span className="text-[var(--color-border)] hidden sm:inline">|</span>
-                <span className="whitespace-nowrap">
-                    Risk <b className={riskColor}>{risk}</b>
-                </span>
-                <span className="whitespace-nowrap">
-                    Susc <b className={sus === 'HIGH' ? 'text-red-600' : 'text-emerald-600'}>{sus}</b>
-                </span>
-                <span
-                    className={`ml-auto text-[9px] font-mono uppercase tracking-wider ${
-                        fresh === 'LIVE' || fresh === 'CACHED'
-                            ? 'text-emerald-600'
-                            : fresh === 'STALE'
-                              ? 'text-amber-600'
-                              : 'text-[var(--color-text-muted)]'
-                    }`}
-                >
-                    {isLoading ? '…' : fresh}
-                </span>
-            </div>
-        </div>
-    );
+  return (
+    <div className="absolute bottom-0 left-0 right-0 z-30 pointer-events-none px-1 pb-1">
+      <div className="bg-white/95 border border-[var(--gov-border)] shadow-sm px-2 py-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[10px] sm:text-[11px] text-[var(--gov-text)] max-w-full overflow-hidden">
+        <span className="font-mono text-[9px] sm:text-[10px] text-[var(--gov-text-muted)] whitespace-nowrap shrink-0">
+          {coords.lat}°N {coords.lng}°E
+        </span>
+        <span className="text-[var(--gov-border)] hidden sm:inline">|</span>
+        <span className="whitespace-nowrap">
+          Rain <b className="text-sky-700">{rain}</b>
+          <span className="text-[var(--gov-text-muted)]"> mm/24h</span>
+        </span>
+        <span className="whitespace-nowrap">
+          Wind <b className="text-sky-700">{wind}</b>
+          <span className="text-[var(--gov-text-muted)]"> km/h</span>
+        </span>
+        <span className="whitespace-nowrap">
+          Soil <b className="text-sky-700">{soil}</b>
+          <span className="text-[var(--gov-text-muted)]">%</span>
+        </span>
+        <span className="whitespace-nowrap hidden sm:inline">
+          Elev <b className="text-sky-700">{elev}</b>
+          <span className="text-[var(--gov-text-muted)]"> m</span>
+        </span>
+        <span className="text-[var(--gov-border)] hidden md:inline">|</span>
+        <span className="whitespace-nowrap">
+          Risk <b className={riskColor}>{risk}</b>
+        </span>
+        <span className="whitespace-nowrap">
+          Susc{" "}
+          <b className={sus === "HIGH" ? "text-red-600" : "text-emerald-600"}>
+            {sus}
+          </b>
+        </span>
+        <span
+          className={`ml-auto text-[9px] font-mono uppercase tracking-wider shrink-0 ${
+            fresh === "LIVE" || fresh === "CACHED"
+              ? "text-emerald-600"
+              : fresh === "STALE"
+              ? "text-amber-600"
+              : "text-[var(--gov-text-muted)]"
+          }`}
+        >
+          {isLoading ? "…" : fresh}
+        </span>
+      </div>
+    </div>
+  );
 };
+
+/** @deprecated — use MapHoverListener + HoverStatusBar */
+export const HoverTooltip = () => null;

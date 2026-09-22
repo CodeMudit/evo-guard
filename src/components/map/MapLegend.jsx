@@ -1,40 +1,68 @@
 import React from "react";
 
+/**
+ * Compact legend matching nerdrr.gov.in style.
+ * Every marker type and line style on the map has an entry here.
+ */
 export const MapLegend = () => {
   return (
-    <div className="absolute bottom-3 left-3 z-[1000] p-3 rounded bg-white/95 backdrop-blur-md border border-[var(--color-border)] shadow-sm text-[var(--color-text-primary)] font-medium text-xs space-y-2 pointer-events-auto max-w-[200px] sm:max-w-xs">
-      <p className="font-bold text-[10px] uppercase tracking-wider text-[var(--color-text-secondary)] border-b border-[var(--color-border)] pb-1.5 mb-2">
-        Map Legend
-      </p>
+    <div className="bg-white border border-[var(--gov-border)] shadow-sm text-[var(--gov-text)] text-[11px] w-44">
+      <div className="bg-[var(--gov-navy)] text-white px-2 py-1 font-bold text-[10px] uppercase tracking-wider">
+        Legend
+      </div>
+      <div className="p-1.5 space-y-1">
+        {/* Markers */}
+        <div className="flex items-center gap-1.5">
+          <div className="w-0 h-0 border-l-[5px] border-r-[5px] border-b-[9px] border-l-transparent border-r-transparent border-b-red-600" />
+          <span>Critical / Extreme Alert</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <div className="w-2.5 h-2.5 bg-orange-600 rotate-45 border border-white shadow-sm" />
+          <span>Active Warning / High</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <div className="w-2.5 h-2.5 rounded-full bg-blue-500 border border-white shadow-sm" />
+          <span>Field Report</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <div className="w-2.5 h-2.5 rounded-full bg-emerald-600 border border-white shadow-sm" />
+          <span>Sensor / Station</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <div className="w-2 h-2 bg-slate-500 border border-white shadow-sm" />
+          <span>Historical Landslide</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <div className="w-2 h-2 rounded-full bg-blue-600 border border-white" />
+          <span>Village</span>
+        </div>
 
-      <div className="grid grid-cols-1 gap-2 text-[11px]">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full border border-slate-500 bg-slate-100 flex items-center justify-center">
-             <div className="w-1.5 h-1.5 bg-slate-500 rounded-full animate-ping"></div>
+        {/* Lines / roads */}
+        <div className="border-t border-[var(--gov-border)] pt-1 mt-1 space-y-1">
+          <div className="flex items-center gap-1.5">
+            <div className="w-5 h-0.5 bg-emerald-500 rounded" />
+            <span>Road — Open</span>
           </div>
-          <span>AWS-1 — Hill Sector</span>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full border border-sky-500 bg-sky-100 flex items-center justify-center">
-             <div className="w-1.5 h-1.5 bg-sky-500 rounded-full animate-ping"></div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-5 h-0.5 bg-amber-500 rounded" />
+            <span>Road — At Risk</span>
           </div>
-          <span>Station Alpha — River Bank</span>
+          <div className="flex items-center gap-1.5">
+            <div className="w-5 h-0.5 bg-red-500 rounded" />
+            <span>Road — Blocked</span>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-purple-600 shadow-sm" />
-          <span>Regional API Data</span>
-        </div>
-
-        <div className="flex items-center gap-2 pt-1 border-t border-slate-100 mt-1">
-          <span className="w-3 h-3 rounded bg-red-100 border border-red-500" />
-          <span className="text-red-700 font-bold">Critical Hazard Zone</span>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-amber-500 animate-pulse shadow-sm" />
-          <span className="text-amber-700 font-bold">Active Alert Location</span>
+        {/* Zones */}
+        <div className="border-t border-[var(--gov-border)] pt-1 mt-1 space-y-1">
+          <div className="flex items-center gap-1.5">
+            <div className="w-3 h-3 bg-red-200 border border-red-500" />
+            <span className="text-red-700 font-semibold">Critical Hazard Zone</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-3 h-3 bg-orange-200 border border-orange-400 border-dashed" />
+            <span>Risk Heatmap (derived)</span>
+          </div>
         </div>
       </div>
     </div>
