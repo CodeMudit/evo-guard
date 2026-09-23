@@ -2,14 +2,14 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
 /**
- * EcoWatch AI — NER multilingual resources
+ * EvoGuard — NER multilingual resources
  * Languages: English, Hindi, Assamese, Bodo, Khasi, Mizo, Manipuri (Meitei), Nagamese, Nepali, Garo, Kokborok
  * Scripts: Latin / Devanagari / Bengali-Assamese / Meitei where practical for the web.
  */
 
 const commonEn = {
   // Brand
-  appName: "EcoWatch AI",
+  appName: "EvoGuard",
   appTagline: "Early Warning & Landslide Risk Monitoring System",
   prototypeBadge: "Prototype — simulated data",
   sihLabel: "NER-DRR Prototype · SIH26001",
@@ -165,9 +165,9 @@ const commonEn = {
     "Use the offline-capable field reporting tool when network is weak or unavailable. Reports queue locally and sync when connectivity returns.",
 
   // About
-  aboutTitle: "About EcoWatch AI",
+  aboutTitle: "About EvoGuard",
   aboutBody:
-    "EcoWatch AI is a prototype early-warning and monitoring platform developed for the Smart India Hackathon (SIH26001). It demonstrates real-time landslide and slope-failure risk monitoring for the North Eastern Region using simulated rainfall, soil-moisture, satellite and field-report data.",
+    "EvoGuard is a prototype early-warning and monitoring platform developed for the Smart India Hackathon (SIH26001). It demonstrates real-time landslide and slope-failure risk monitoring for the North Eastern Region using simulated rainfall, soil-moisture, satellite and field-report data.",
   aboutDisclaimer:
     "This is a student/hackathon prototype. All telemetry, alerts and risk scores shown are simulated and must not be treated as operational or official advisories.",
 
@@ -177,7 +177,7 @@ const commonEn = {
   terms: "Terms",
   disclaimer: "Disclaimer",
   contact: "Contact",
-  copyright: "© 2026 EcoWatch AI · SIH26001 Team · Prototype — simulated data",
+  copyright: "© 2026 EvoGuard · SIH26001 Team · Prototype — simulated data",
 
   // Status bar
   rain: "Rain",
@@ -547,7 +547,7 @@ const resources = {
   kha: {
     translation: {
       ...commonEn,
-      appName: "EcoWatch AI",
+      appName: "EvoGuard",
       appTagline: "Ka System ban ih-luh shwa bad ban peit ia ka jinglong jingmut jingjynjar",
       prototypeBadge: "Prototype — data ba la simulat",
       nav_home: "IING",
@@ -585,7 +585,7 @@ const resources = {
       selectSeverity: "Jied ia ka jingkhia",
       description: "Ka jingbatai",
       contactUs: "Iathuh jam",
-      aboutTitle: "Shaphang EcoWatch AI",
+      aboutTitle: "Shaphang EvoGuard",
       rain: "Slap",
       wind: "Lyer",
       soil: "Khyndew",
@@ -597,7 +597,7 @@ const resources = {
   miz: {
     translation: {
       ...commonEn,
-      appName: "EcoWatch AI",
+      appName: "EvoGuard",
       appTagline: "Hriattirna hmasak leh tlak chhiatna venghim system",
       prototypeBadge: "Prototype — data simulated",
       nav_home: "IN",
@@ -635,7 +635,7 @@ const resources = {
       selectSeverity: "Nasat dan thlang rawh",
       description: "Sawifiahna",
       contactUs: "Min biak rawh",
-      aboutTitle: "EcoWatch AI chanchin",
+      aboutTitle: "EvoGuard chanchin",
       rain: "Ruah",
       wind: "Thli",
       soil: "Lei",
@@ -697,7 +697,7 @@ const resources = {
   nag: {
     translation: {
       ...commonEn,
-      appName: "EcoWatch AI",
+      appName: "EvoGuard",
       appTagline: "Age warning aru landslide risk monitoring system",
       prototypeBadge: "Prototype — simulated data",
       nav_home: "GHAR",
@@ -735,7 +735,7 @@ const resources = {
       selectSeverity: "Gurutwo select kora",
       description: "Biboron",
       contactUs: "Jogajog kora",
-      aboutTitle: "EcoWatch AI r bishoyot",
+      aboutTitle: "EvoGuard r bishoyot",
       rain: "Borkhun",
       wind: "Botah",
       soil: "Mati",
@@ -797,7 +797,7 @@ const resources = {
   grt: {
     translation: {
       ...commonEn,
-      appName: "EcoWatch AI",
+      appName: "EvoGuard",
       appTagline: "Skangni warning aro landslide risk monitoring system",
       prototypeBadge: "Prototype — simulated data",
       nav_home: "NOK",
@@ -829,7 +829,7 @@ const resources = {
   trp: {
     translation: {
       ...commonEn,
-      appName: "EcoWatch AI",
+      appName: "EvoGuard",
       appTagline: "Sikala warning aro landslide risk monitoring system",
       prototypeBadge: "Prototype — simulated data",
       nav_home: "NOK",

@@ -17,7 +17,7 @@ export const AboutModal = ({ isOpen, onClose }) => {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="bg-[var(--gov-navy)] text-white px-3 py-2 flex justify-between items-center">
-          <h2 className="text-[14px] font-bold">About EcoWatch AI</h2>
+          <h2 className="text-[14px] font-bold">About EvoGuard</h2>
           <button
             onClick={onClose}
             className="w-7 h-7 flex items-center justify-center bg-white/20 hover:bg-white/30 text-lg leading-none"
@@ -29,7 +29,7 @@ export const AboutModal = ({ isOpen, onClose }) => {
 
         <div className="p-4 overflow-y-auto text-[13px] text-[var(--gov-text-secondary)] leading-relaxed space-y-3">
           <p>
-            EcoWatch AI is a prototype early-warning and monitoring platform developed for the Smart India Hackathon (SIH26001).
+            EvoGuard is a prototype early-warning and monitoring platform developed for the Smart India Hackathon (SIH26001).
             It demonstrates real-time landslide and slope-failure risk monitoring for the North Eastern Region using simulated
             rainfall, soil-moisture, satellite and field-report data.
           </p>

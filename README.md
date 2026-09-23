@@ -1,4 +1,4 @@
-# EcoWatch AI: Early Warning & Landslide Risk Monitoring System
+# EvoGuard: Early Warning & Landslide Risk Monitoring System
 **SIH26001 Prototype for North Eastern Regional Node for Disaster Risk Reduction (NER-DRR)**
 
 ## Project Purpose
